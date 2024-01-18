@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javagreenS_Skg.dao.AsDAO">
+	<select id="totRecCnt" resultType="int">
+		select count(*) from as2;
+	</select>
+	
+	<select id="totMemASRecCnt" resultType="int">
+		select count(*) from as2 where mid=#{searchString};
+	</select>
+	
+	<select id="setAsPwdCheck" resultType="com.spring.javagreenS_Skg.vo.AsVO">
+		select * from as2 where idx=#{idx} and name=#{name} and pwd=#{pwd};
+	</select>
+	
+	<!-- asReply2 테이블에서 asIdx 열이 as2.idx와 일치하는 레코드 수를 계산하고 이를 replyCount라 지정 => AsVO에 replyCount필드를 추가. -->
+	<select id="getAsContent" resultType="com.spring.javagreenS_Skg.vo.AsVO">
+		select *, (select count(*) from asReply2 where asIdx = as2.idx) as replyCount from as2 where idx=#{idx};
+	</select>
+	
+	<select id="totSearchRecCnt" resultType="int">
+	  	select count(*) from as2 where ${search} like concat('%',#{searchString},'%');
+	</select>
+	 
+	<select id="getAsList" resultType="com.spring.javagreenS_Skg.vo.AsVO">
+		select *,cast(TIMESTAMPDIFF(MINUTE,wDate,NOW())/60 as signed integer) AS diffTime from as2 order by idx desc limit #{startIndexNo},#{pageSize}; 
+	</select>
+	
+	<select id="maxLevelOrder" resultType="String">
+		select max(levelOrder) from asReply2 where asIdx=#{asIdx};
+	</select>
+	
+	<select id="getAsReply" resultType="com.spring.javagreenS_Skg.vo.AsReplyVO">
+		select * from asReply2 where asIdx=#{idx} order by levelOrder; 
+	</select>
+	  
+	<!--  <select id="getProductQnA" resultType="com.spring.javagreenS_Skg.vo.DbProductQnAVO">
+		select * from productQnA2 where productIdx=#{idx};
+	</select> -->
+	
+	<select id="getAsBoardList" resultType="com.spring.javagreenS_Skg.vo.AsVO">
+		select * from as2 where mid = #{mid} order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+
+    <select id="getAsSearch" resultType="com.spring.javagreenS_Skg.vo.AsVO">
+        select *, cast(TIMESTAMPDIFF(MINUTE, wDate, NOW()) / 60 as signed integer) AS diffTime from as2 where ${search} like concat('%', #{searchString}, '%') order by idx desc limit #{startIndexNo}, #{pageSize}; 
+    </select>
+  
+  
+  
+	<insert id="setAsInputOk">
+		insert into as2 values(default, #{vo.name}, #{vo.pwd}, #{vo.tel}, #{vo.email}, #{vo.productName}, #{vo.place}, #{vo.purchaseDate}, default, #{vo.title}, #{vo.content}, #{vo.open}, default, #{vo.mid});
+	</insert>
+	
+	<insert id="setAsReplyInput">
+		insert into asReply2 value(default, #{replyVo.asIdx},#{replyVo.name},default,#{replyVo.content},#{replyVo.level},#{replyVo.levelOrder});
+	</insert>
+	
+	<insert id="setAsReplyInput2">
+		insert into asReply2 value(default, #{replyVo.asIdx},#{replyVo.name},default,#{replyVo.content},#{replyVo.level},#{replyVo.levelOrder});
+	</insert>
+	
+	
+	
+	<update id="setAsUpdate">
+		update as2 set tel=#{vo.tel},email=#{vo.email},productName=#{vo.productName},place=#{vo.place},purchaseDate=#{vo.purchaseDate},title=#{vo.title},content=#{vo.content},open=#{vo.open} where idx=#{vo.idx};
+	</update>
+	
+	<update id="setAsReplyUpdate">
+		update as2 set content=#{vo.content} where idx=#{idx};
+	</update>
+	
+	<update id="swCheck">
+		update as2 set sw='OK' where idx=#{idx};
+	</update>
+	
+	<update id="levelOrderPlusUpdate">
+		update asReply2 set levelOrder=levelOrder+1 where asIdx=#{replyVo.asIdx} and levelOrder>#{replyVo.levelOrder}; 
+	</update>
+	
+
+	
+	<delete id="setAsDelete">
+		delete from as2 where idx = #{idx};
+	</delete>
+	
+	<delete id="setAsReplyDelete">
+		delete from asReply2 where idx = #{idx};
+	</delete>
+	
+	<delete id="setAsDeleteReply">
+		delete from asReply2 where asIdx = #{idx};
+	</delete>
+</mapper>
