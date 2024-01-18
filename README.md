@@ -11,7 +11,7 @@
 
 - 개발 프로그램 : **eclipse 2023.06**
 
-- 형상 관리 : Git
+- 형상 관리 : **Git**
 
 <h3 align="left">Languages and Tools:</h3>
 <p align="left"> 
